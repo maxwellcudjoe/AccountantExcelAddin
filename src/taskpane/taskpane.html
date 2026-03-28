@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LedgerFlow Pro</title>
+    <script
+      type="text/javascript"
+      src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"
+    ></script>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #f5f5f5; color: #333; }
+
+      /* ── Header ── */
+      #header {
+        background: #1a6b3c;
+        color: #fff;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #header h1 { font-size: 15px; font-weight: 600; }
+      #header span { font-size: 11px; opacity: 0.75; margin-left: auto; }
+
+      /* ── Toast ── */
+      #toast {
+        display: none;
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 9999;
+        max-width: 300px;
+        text-align: center;
+      }
+      #toast.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+      #toast.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+      #toast.info    { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+      /* ── Auth panel ── */
+      #auth-panel {
+        padding: 20px 14px;
+      }
+      #auth-panel h2 { font-size: 14px; margin-bottom: 14px; color: #1a6b3c; }
+      #auth-panel input {
+        width: 100%; padding: 7px 10px; margin-bottom: 8px;
+        border: 1px solid #ccc; border-radius: 4px; font-size: 13px;
+      }
+      #auth-panel button {
+        width: 100%; padding: 8px; background: #1a6b3c; color: #fff;
+        border: none; border-radius: 4px; cursor: pointer; font-size: 13px;
+      }
+      #auth-panel button:hover { background: #155732; }
+      #auth-panel .toggle { text-align: center; margin-top: 10px; font-size: 12px; }
+      #auth-panel .toggle a { color: #1a6b3c; cursor: pointer; text-decoration: underline; }
+      #offline-btn {
+        width: 100%; margin-top: 10px; padding: 8px; background: #6c757d;
+        color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+      }
+
+      /* ── OneDrive panel ── */
+      #onedrive-panel {
+        padding: 14px;
+        background: #e8f5e9;
+        border-bottom: 1px solid #c8e6c9;
+        display: none;
+      }
+      #onedrive-panel p { font-size: 12px; margin-bottom: 8px; }
+      #onedrive-connect-btn {
+        padding: 6px 14px; background: #0078d4; color: #fff;
+        border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+      }
+      #onedrive-status { font-size: 11px; color: #555; margin-top: 6px; }
+
+      /* ── Nav tabs ── */
+      #nav {
+        display: none;
+        flex-wrap: wrap;
+        gap: 2px;
+        padding: 6px 6px 0;
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+      }
+      .nav-tab {
+        padding: 5px 10px;
+        font-size: 11px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        cursor: pointer;
+        color: #555;
+      }
+      .nav-tab.active { background: #1a6b3c; color: #fff; border-color: #1a6b3c; }
+      .nav-tab.gated  { opacity: 0.5; }
+
+      /* ── Tab content ── */
+      .tab-panel { display: none; padding: 12px 14px; }
+      .tab-panel.active { display: block; }
+
+      /* ── Platform gate ── */
+      .platform-gate {
+        text-align: center;
+        padding: 30px 14px;
+        color: #888;
+        font-size: 12px;
+      }
+      .platform-gate button {
+        margin-top: 12px; padding: 7px 16px; background: #1a6b3c;
+        color: #fff; border: none; border-radius: 4px; cursor: pointer;
+      }
+
+      /* ── Generic form elements ── */
+      .lf-label { font-size: 11px; font-weight: 600; margin-bottom: 3px; display: block; color: #555; }
+      .lf-input {
+        width: 100%; padding: 6px 8px; border: 1px solid #ccc;
+        border-radius: 3px; font-size: 12px; margin-bottom: 8px;
+      }
+      .lf-btn {
+        padding: 7px 14px; background: #1a6b3c; color: #fff;
+        border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+      }
+      .lf-btn:hover { background: #155732; }
+      .lf-btn.secondary { background: #6c757d; }
+      .lf-btn.secondary:hover { background: #5a6268; }
+      .lf-result {
+        margin-top: 8px; padding: 8px; border-radius: 3px;
+        font-size: 12px; display: none;
+      }
+      .lf-result.success { background: #d4edda; color: #155724; }
+      .lf-result.error   { background: #f8d7da; color: #721c24; }
+      .lf-result.info    { background: #d1ecf1; color: #0c5460; }
+      h3 { font-size: 13px; margin-bottom: 10px; color: #1a6b3c; }
+      hr { border: none; border-top: 1px solid #eee; margin: 12px 0; }
+    </style>
+  </head>
+  <body>
+
+    <!-- Toast -->
+    <div id="toast"></div>
+
+    <!-- Header -->
+    <div id="header">
+      <h1>LedgerFlow Pro</h1>
+      <span id="user-label">Not signed in</span>
+    </div>
+
+    <!-- Auth Panel (shown when not logged in) -->
+    <div id="auth-panel">
+      <h2 id="auth-title">Sign in</h2>
+      <input id="auth-email"    type="email"    placeholder="Email address" />
+      <input id="auth-fullname" type="text"     placeholder="Full name" style="display:none" />
+      <input id="auth-firm"     type="text"     placeholder="Firm name (optional)" style="display:none" />
+      <input id="auth-password" type="password" placeholder="Password" />
+      <button id="auth-submit-btn">Sign In</button>
+      <div class="toggle">
+        <a id="auth-toggle-link">Don't have an account? Register</a>
+      </div>
+      <button id="offline-btn">Use Without Account (Offline)</button>
+    </div>
+
+    <!-- OneDrive Connect Banner (shown after login) -->
+    <div id="onedrive-panel">
+      <p>Connect your OneDrive to sync encrypted data across devices.</p>
+      <button id="onedrive-connect-btn">Connect OneDrive</button>
+      <div id="onedrive-status"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div id="nav">
+      <div class="nav-tab active"  data-tab="reconcile">Reconcile</div>
+      <div class="nav-tab"         data-tab="closing">Close</div>
+      <div class="nav-tab"         data-tab="vat">VAT</div>
+      <div class="nav-tab gated"   data-tab="payroll">Payroll</div>
+      <div class="nav-tab gated"   data-tab="assets">Assets</div>
+      <div class="nav-tab gated"   data-tab="reports">Reports</div>
+      <div class="nav-tab gated"   data-tab="budget">Budget</div>
+      <div class="nav-tab"         data-tab="settings">Settings</div>
+    </div>
+
+    <!-- ── Tab Panels ─────────────────────────────────────────────────────── -->
+
+    <div id="tab-reconcile" class="tab-panel active">
+      <h3>Bank Reconciliation</h3>
+      <p class="lf-label">Select your Bank Data range, then Ledger Data range, then click Match.</p>
+      <hr/>
+      <label class="lf-label">Bank Data Range</label>
+      <input id="recon-bank-range" class="lf-input" placeholder="e.g. Sheet1!A2:D100" />
+      <label class="lf-label">Ledger Data Range</label>
+      <input id="recon-ledger-range" class="lf-input" placeholder="e.g. Sheet2!A2:D100" />
+      <label class="lf-label">Date Tolerance (days)</label>
+      <input id="recon-tolerance" class="lf-input" type="number" value="3" min="0" max="30" />
+      <button id="recon-match-btn" class="lf-btn">Match Transactions</button>
+      <button id="recon-clear-btn" class="lf-btn secondary" style="margin-left:6px">Clear</button>
+      <div id="recon-result" class="lf-result"></div>
+    </div>
+
+    <div id="tab-closing" class="tab-panel">
+      <h3>Month-End Close</h3>
+      <hr/>
+      <h3>Journal Validator</h3>
+      <label class="lf-label">Debit Column Letter</label>
+      <input id="close-debit-col"  class="lf-input" value="C" maxlength="2" style="width:60px" />
+      <label class="lf-label">Credit Column Letter</label>
+      <input id="close-credit-col" class="lf-input" value="D" maxlength="2" style="width:60px" />
+      <button id="close-validate-btn" class="lf-btn">Validate Journal</button>
+      <div id="close-result" class="lf-result"></div>
+      <hr/>
+      <h3>Accruals Scheduler</h3>
+      <label class="lf-label">Description</label>
+      <input id="accrual-desc"   class="lf-input" placeholder="e.g. Office rent accrual" />
+      <label class="lf-label">Monthly Amount</label>
+      <input id="accrual-amount" class="lf-input" type="number" placeholder="0.00" />
+      <label class="lf-label">Start Month (YYYY-MM)</label>
+      <input id="accrual-start"  class="lf-input" type="month" />
+      <label class="lf-label">End Month (YYYY-MM)</label>
+      <input id="accrual-end"    class="lf-input" type="month" />
+      <label class="lf-label">GL Code</label>
+      <input id="accrual-gl"     class="lf-input" placeholder="e.g. 6100" />
+      <button id="accrual-generate-btn" class="lf-btn">Generate Schedule</button>
+      <div id="accrual-result" class="lf-result"></div>
+    </div>
+
+    <div id="tab-vat" class="tab-panel">
+      <h3>VAT / Withholding Tax</h3>
+      <hr/>
+      <h3>VAT Tagger</h3>
+      <label class="lf-label">Amount Column Letter</label>
+      <input id="vat-amount-col" class="lf-input" value="C" maxlength="2" style="width:60px" />
+      <label class="lf-label">Tag Column (output)</label>
+      <input id="vat-tag-col"    class="lf-input" value="E" maxlength="2" style="width:60px" />
+      <label class="lf-label">VAT Column (output)</label>
+      <input id="vat-out-col"    class="lf-input" value="F" maxlength="2" style="width:60px" />
+      <label class="lf-label">VAT Type</label>
+      <select id="vat-type" class="lf-input">
+        <option value="standard">Standard Rate</option>
+        <option value="zero">Zero-rated</option>
+        <option value="exempt">Exempt</option>
+        <option value="oos">Out-of-Scope</option>
+      </select>
+      <label class="lf-label">Standard Rate (%)</label>
+      <input id="vat-rate" class="lf-input" type="number" value="15" min="0" max="100" />
+      <button id="vat-tag-btn" class="lf-btn">Apply to Selection</button>
+      <button id="vat-summary-btn" class="lf-btn secondary" style="margin-left:6px">Generate Summary</button>
+      <div id="vat-result" class="lf-result"></div>
+    </div>
+
+    <div id="tab-payroll" class="tab-panel">
+      <div class="platform-gate" id="payroll-gate">
+        <p>Payroll is available on the Pro plan.</p>
+        <button onclick="switchTab('settings')">Upgrade Plan</button>
+      </div>
+      <div id="payroll-content" style="display:none">
+        <h3>Payroll Calculator</h3>
+        <!-- Populated by setupPayroll() -->
+      </div>
+    </div>
+
+    <div id="tab-assets" class="tab-panel">
+      <div class="platform-gate" id="assets-gate">
+        <p>Fixed Assets is available on the Pro plan.</p>
+        <button onclick="switchTab('settings')">Upgrade Plan</button>
+      </div>
+      <div id="assets-content" style="display:none">
+        <h3>Fixed Asset Register</h3>
+        <!-- Populated by setupAssets() -->
+      </div>
+    </div>
+
+    <div id="tab-reports" class="tab-panel">
+      <div class="platform-gate" id="reports-gate">
+        <p>Financial Reports is available on the Pro plan.</p>
+        <button onclick="switchTab('settings')">Upgrade Plan</button>
+      </div>
+      <div id="reports-content" style="display:none">
+        <h3>Financial Statements</h3>
+        <!-- Populated by setupReports() -->
+      </div>
+    </div>
+
+    <div id="tab-budget" class="tab-panel">
+      <div class="platform-gate" id="budget-gate">
+        <p>Budget Variance is available on the Pro plan.</p>
+        <button onclick="switchTab('settings')">Upgrade Plan</button>
+      </div>
+      <div id="budget-content" style="display:none">
+        <h3>Budget Variance</h3>
+        <!-- Populated by setupBudget() -->
+      </div>
+    </div>
+
+    <div id="tab-settings" class="tab-panel">
+      <h3>Account</h3>
+      <div id="settings-user-info" style="font-size:12px; margin-bottom:12px; color:#555;"></div>
+      <button id="settings-logout-btn" class="lf-btn secondary">Sign Out</button>
+      <hr/>
+      <h3>OneDrive Sync</h3>
+      <div id="settings-onedrive-info" style="font-size:12px; margin-bottom:8px; color:#555;">Not connected</div>
+      <button id="settings-onedrive-btn" class="lf-btn">Connect OneDrive</button>
+      <button id="settings-onedrive-disconnect" class="lf-btn secondary" style="margin-left:6px; display:none">Disconnect</button>
+      <hr/>
+      <h3>Data Password</h3>
+      <p style="font-size:11px; color:#666; margin-bottom:8px;">
+        This password encrypts your data. It is never sent to our servers.
+      </p>
+      <input id="settings-data-pwd" type="password" class="lf-input" placeholder="Set or enter data password" />
+      <button id="settings-data-pwd-btn" class="lf-btn">Set Encryption Key</button>
+      <div id="settings-crypto-status" style="font-size:11px; margin-top:6px; color:#1a6b3c;"></div>
+      <hr/>
+      <h3>Plan</h3>
+      <div id="settings-plan-info" style="font-size:12px; color:#555; margin-bottom:8px;"></div>
+    </div>
+
+  </body>
+</html>

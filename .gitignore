@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment secrets — NEVER commit
+.env
+
+# Dev certs
+*.key
+*.crt
+*.pem
+
+# Logs
+*.log
+azure-logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
