@@ -47,7 +47,7 @@ module.exports = (env, options) => {
         chunks: ["commands"],
       }),
       new CopyWebpackPlugin({
-        patterns: [{ from: "assets", to: "assets" }],
+        patterns: [{ from: "assets", to: "assets", noErrorOnMissing: true }],
       }),
       new webpack.DefinePlugin({
         "process.env.AZURE_CLIENT_ID": JSON.stringify(

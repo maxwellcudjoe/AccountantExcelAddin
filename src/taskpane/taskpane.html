@@ -257,7 +257,34 @@
       </div>
       <div id="payroll-content" style="display:none">
         <h3>Payroll Calculator</h3>
-        <!-- Populated by setupPayroll() -->
+        <label class="lf-label">Employee Name Column</label>
+        <input id="pay-name-col" class="lf-input" value="A" maxlength="2" style="width:60px" />
+        <label class="lf-label">Gross Salary Column</label>
+        <input id="pay-gross-col" class="lf-input" value="B" maxlength="2" style="width:60px" />
+        <label class="lf-label">Allowances Column</label>
+        <input id="pay-allow-col" class="lf-input" value="C" maxlength="2" style="width:60px" />
+        <label class="lf-label">Net Pay Output Column</label>
+        <input id="pay-net-col" class="lf-input" value="F" maxlength="2" style="width:60px" />
+        <label class="lf-label">Social Security Rate (%)</label>
+        <input id="pay-ss-rate" class="lf-input" type="number" value="5.5" min="0" max="30" />
+        <label class="lf-label">Employer SS Rate (%)</label>
+        <input id="pay-ess-rate" class="lf-input" type="number" value="13" min="0" max="30" />
+        <button id="pay-calc-btn" class="lf-btn">Calculate Payroll</button>
+        <button id="pay-payslip-btn" class="lf-btn secondary" style="margin-left:6px">Generate Payslips</button>
+        <div id="pay-result" class="lf-result"></div>
+        <hr/>
+        <h3>Tax Band Editor</h3>
+        <p style="font-size:11px;color:#666;margin-bottom:8px">Define up to 6 PAYE income bands. Bands saved to your encrypted OneDrive.</p>
+        <div id="pay-bands-table"
+             style="font-size:11px;margin-bottom:8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;font-weight:600;margin-bottom:4px">
+            <span>From</span><span>To (0=unlimited)</span><span>Rate (%)</span>
+          </div>
+          <div id="pay-bands-rows"></div>
+        </div>
+        <button id="pay-add-band-btn" class="lf-btn secondary" style="font-size:11px;padding:4px 10px">+ Add Band</button>
+        <button id="pay-save-bands-btn" class="lf-btn" style="margin-left:6px;font-size:11px;padding:4px 10px">Save Bands</button>
+        <div id="pay-bands-result" class="lf-result"></div>
       </div>
     </div>
 
@@ -267,8 +294,40 @@
         <button onclick="switchTab('settings')">Upgrade Plan</button>
       </div>
       <div id="assets-content" style="display:none">
-        <h3>Fixed Asset Register</h3>
-        <!-- Populated by setupAssets() -->
+        <h3>Add Asset</h3>
+        <label class="lf-label">Asset Name</label>
+        <input id="ast-name" class="lf-input" placeholder="e.g. Office Computer" />
+        <label class="lf-label">Cost</label>
+        <input id="ast-cost" class="lf-input" type="number" placeholder="0.00" />
+        <label class="lf-label">Residual Value</label>
+        <input id="ast-residual" class="lf-input" type="number" placeholder="0.00" value="0" />
+        <label class="lf-label">Useful Life (years)</label>
+        <input id="ast-life" class="lf-input" type="number" placeholder="5" min="1" />
+        <label class="lf-label">Acquisition Date</label>
+        <input id="ast-date" class="lf-input" type="date" />
+        <label class="lf-label">Depreciation Method</label>
+        <select id="ast-method" class="lf-input">
+          <option value="sl">Straight-Line</option>
+          <option value="rb">Reducing Balance</option>
+        </select>
+        <label class="lf-label">GL Code</label>
+        <input id="ast-gl" class="lf-input" placeholder="e.g. 1200" />
+        <button id="ast-add-btn" class="lf-btn">Add to Register</button>
+        <button id="ast-schedule-btn" class="lf-btn secondary" style="margin-left:6px">Generate Schedule</button>
+        <div id="ast-result" class="lf-result"></div>
+        <hr/>
+        <h3>Asset Register</h3>
+        <button id="ast-view-btn" class="lf-btn secondary">View Register in Sheet</button>
+        <hr/>
+        <h3>Disposal Calculator</h3>
+        <label class="lf-label">Asset Name</label>
+        <input id="disp-name" class="lf-input" placeholder="Asset name to dispose" />
+        <label class="lf-label">Net Book Value at Disposal</label>
+        <input id="disp-nbv" class="lf-input" type="number" placeholder="0.00" />
+        <label class="lf-label">Disposal Proceeds</label>
+        <input id="disp-proceeds" class="lf-input" type="number" placeholder="0.00" />
+        <button id="disp-calc-btn" class="lf-btn">Calculate Disposal</button>
+        <div id="disp-result" class="lf-result"></div>
       </div>
     </div>
 
@@ -278,8 +337,33 @@
         <button onclick="switchTab('settings')">Upgrade Plan</button>
       </div>
       <div id="reports-content" style="display:none">
-        <h3>Financial Statements</h3>
-        <!-- Populated by setupReports() -->
+        <h3>Trial Balance Columns</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div><label class="lf-label">Code Col</label>
+            <input id="tb-col-code" class="lf-input" value="A" maxlength="2"/></div>
+          <div><label class="lf-label">Name Col</label>
+            <input id="tb-col-name" class="lf-input" value="B" maxlength="2"/></div>
+          <div><label class="lf-label">Debit Col</label>
+            <input id="tb-col-debit" class="lf-input" value="C" maxlength="2"/></div>
+          <div><label class="lf-label">Credit Col</label>
+            <input id="tb-col-credit" class="lf-input" value="D" maxlength="2"/></div>
+        </div>
+        <hr/>
+        <h3>Account Mapping</h3>
+        <p style="font-size:11px;color:#666;margin-bottom:6px">Map GL code ranges to financial statement lines.</p>
+        <div style="display:grid;grid-template-columns:60px 60px 1fr;gap:4px;font-size:11px;font-weight:600;margin-bottom:4px">
+          <span>From</span><span>To</span><span>FS Line</span>
+        </div>
+        <div id="rpt-mapping-rows"></div>
+        <button id="rpt-add-mapping-btn" class="lf-btn secondary" style="font-size:11px;padding:4px 10px">+ Add Row</button>
+        <button id="rpt-save-mapping-btn" class="lf-btn" style="margin-left:6px;font-size:11px;padding:4px 10px">Save Mapping</button>
+        <div id="rpt-mapping-result" class="lf-result"></div>
+        <hr/>
+        <h3>Generate Statements</h3>
+        <button id="rpt-pl-btn" class="lf-btn" style="width:100%;margin-bottom:6px">Generate P&amp;L</button>
+        <button id="rpt-bs-btn" class="lf-btn" style="width:100%;margin-bottom:6px">Generate Balance Sheet</button>
+        <button id="rpt-cf-btn" class="lf-btn" style="width:100%">Generate Cash Flow (Indirect)</button>
+        <div id="rpt-result" class="lf-result"></div>
       </div>
     </div>
 
@@ -289,8 +373,30 @@
         <button onclick="switchTab('settings')">Upgrade Plan</button>
       </div>
       <div id="budget-content" style="display:none">
-        <h3>Budget Variance</h3>
-        <!-- Populated by setupBudget() -->
+        <h3>Variance Analysis</h3>
+        <label class="lf-label">Actual Sheet Name</label>
+        <input id="bud-actual-sheet" class="lf-input" placeholder="e.g. Actual" value="Actual" />
+        <label class="lf-label">Budget Sheet Name</label>
+        <input id="bud-budget-sheet" class="lf-input" placeholder="e.g. Budget" value="Budget" />
+        <label class="lf-label">Amount Column Letter</label>
+        <input id="bud-amt-col" class="lf-input" value="B" maxlength="2" style="width:60px" />
+        <label class="lf-label">Adverse Threshold (%)</label>
+        <input id="bud-threshold" class="lf-input" type="number" value="10" min="0" max="100" />
+        <label class="lf-label">Variance Output Sheet</label>
+        <input id="bud-out-sheet" class="lf-input" placeholder="Variance_Analysis" value="Variance_Analysis" />
+        <button id="bud-variance-btn" class="lf-btn" style="width:100%;margin-bottom:6px">Calculate Variance</button>
+        <div id="bud-variance-result" class="lf-result"></div>
+        <hr/>
+        <h3>Rolling Forecast</h3>
+        <label class="lf-label">Locked Actuals (months from col B)</label>
+        <input id="bud-locked-months" class="lf-input" type="number" value="3" min="0" max="12" />
+        <label class="lf-label">Forecast Method</label>
+        <select id="bud-forecast-method" class="lf-input">
+          <option value="budget">Use Budget Figures</option>
+          <option value="trend">Linear Trend from Actuals</option>
+        </select>
+        <button id="bud-forecast-btn" class="lf-btn" style="width:100%">Generate Forecast</button>
+        <div id="bud-forecast-result" class="lf-result"></div>
       </div>
     </div>
 
